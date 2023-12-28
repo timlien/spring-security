@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Objects;
+
 @Getter
 @Setter
 @Entity
@@ -15,10 +17,41 @@ public class Authority {
     @Column(name="id")
     private Integer id;
 
-    @Column(name="user_id")
-    private Integer userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
-    @Column(name="authority")
-    private String authority;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type")
+    private AuthorityType type;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Authority authority = (Authority) o;
+        return type == authority.type && Objects.equals(user, authority.user);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, user);
+    }
+
+    @Override
+    public String toString() {
+        return "Authority{" +
+                "id=" + id +
+                ", type=" + type +
+                ", user=" + user.getId() +
+                '}';
+    }
+
+    public static Authority newInstance(User user, AuthorityType type) {
+        Authority authority = new Authority();
+        authority.setUser(user);
+        authority.setType(type);
+        return authority;
+    }
 
 }

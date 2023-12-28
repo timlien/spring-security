@@ -35,9 +35,9 @@ public class UserAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        String email = authentication.getName();
+        String username = authentication.getName();
         String password = authentication.getCredentials().toString();
-        Optional<User> userOptional = userRepository.findByEmail(email);
+        Optional<User> userOptional = userRepository.findByUsername(username);
 
         if (userOptional.isEmpty()) {
             throw new BadCredentialsException("No user registered with this details!");
@@ -50,10 +50,10 @@ public class UserAuthenticationProvider implements AuthenticationProvider {
 
         List<GrantedAuthority> authorities = new ArrayList<>();
         for (Authority authority : authorityRepository.findByUserId(user.getId())) {
-            authorities.add(new SimpleGrantedAuthority(authority.getAuthority()));
+            authorities.add(new SimpleGrantedAuthority(authority.getType().getName()));
         }
 
-        return new UsernamePasswordAuthenticationToken(email, password, authorities);
+        return new UsernamePasswordAuthenticationToken(username, password, authorities);
     }
 
     @Override
